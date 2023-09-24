@@ -1,4 +1,4 @@
-from flask import Flask  # 서버 구현을 위한 Flask 객체 import
+from flask import Flask, request  # 서버 구현을 위한 Flask 객체 import
 from flask_restx import Api, Resource  # Api 구현을 위한 Api 객체 import
 from solve_cloudflare import SolveCloudflare
 
@@ -32,23 +32,23 @@ api = Api(app)  # Flask 객체에 Api 객체 등록
 '''
 
 
-# host = 'https://www.internetbanking.cimbbank.com.kh'
-# url = '/corp/common2/login.do?action=loginRequest'
-#
-# result = SolveCloudflare.solve(host + url)
-# print(result)
-
-
 @api.route('/hello/<string:name>')  # url pattern으로 name 설정
 class Hello(Resource):
     def get(self, name):  # 멤버 함수의 파라미터로 name 설정
         return {"message": "Welcome, %s!" % name}
 
 
-@api.route('/solve/siteurl')
+@api.route('/solvecloudflare')
 class SolveSite(Resource):
-    def get(self, url):
-        return {"result": f"The url is {url}"}
+    def post(self):
+        api_key = request.json.get('api-key')
+        url = request.json.get('url')
+
+        if api_key == 'pncsoft1':
+            result = SolveCloudflare.solve(url)
+            return {"result": result, 'status': True, 'code': 200}
+        else:
+            return {"result": '', 'status': False, 'code': 401}
 
 
 if __name__ == '__main__':

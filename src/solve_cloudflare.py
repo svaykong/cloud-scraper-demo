@@ -68,6 +68,13 @@ class SolveCloudflare:
             result_str = driver.page_source
             print(result_str)  # obtains the contents update
 
+        title = driver.title
         driver.quit()
 
-        return {"data": result_str, "status": bypass_success, "error": error}
+        if bypass_success:
+            msg = "success"
+        else:
+            msg = "failed"
+
+        return {"data": result_str, "title": title, "bypass": msg, "error": error}
+
