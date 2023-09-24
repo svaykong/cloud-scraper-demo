@@ -1,6 +1,10 @@
+import os
+
 from flask import Flask, request  # 서버 구현을 위한 Flask 객체 import
 from flask_restx import Api, Resource  # Api 구현을 위한 Api 객체 import
 from solve_cloudflare import SolveCloudflare
+from dotenv import load_dotenv
+load_dotenv()  # take environment variables from .env.
 
 app = Flask(__name__)  # Flask 객체 선언, 파라미터로 어플리케이션 패키지의 이름을 넣어줌.
 api = Api(app)  # Flask 객체에 Api 객체 등록
@@ -44,7 +48,7 @@ class SolveSite(Resource):
         api_key = request.json.get('api-key')
         url = request.json.get('url')
 
-        if api_key == 'pncsoft1':
+        if api_key == os.environ.get("API_KEY"):
             result = SolveCloudflare.solve(url)
             return {"result": result, 'status': True, 'code': 200}
         else:
