@@ -4,6 +4,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
+from urllib import parse
+from common import screenshot
 
 
 class SolveCloudflare:
@@ -12,12 +14,18 @@ class SolveCloudflare:
         pass
 
     @staticmethod
-    def solve(url, user_agent=None, use_random_user_agent=False, random_agent='Firefox') -> dict:
+    def solve(url=None, user_agent=None, use_random_agent=False, random_agent_name=None) -> dict:
         print('Solve cloudflare...')
 
-        sas_driver = SASDriver(user_agent=user_agent,
-                               use_random_user_agent=use_random_user_agent,
-                               random_agent=random_agent)
+        sas_driver = SASDriver()
+        if user_agent is not None and user_agent != '':
+            sas_driver.userAgent = user_agent
+
+        if use_random_agent:
+            if random_agent_name is not None and random_agent_name != '':
+                sas_driver.randomAgentName = random_agent_name
+                sas_driver.set_random_user_agent()
+
         sas_driver.init_chrome_option()
         sas_driver.init_driver()
         driver = sas_driver.driver
@@ -28,7 +36,16 @@ class SolveCloudflare:
 
         print(f'request url: {url}')
 
-        driver.get(url)
+        # driver.get(url)
+        driver.execute_script('''window.open("http://nowsecure.nl","_blank");''')  # open page in new tab
+        sleep(5)  # wait until page has loaded
+        driver.switch_to.window(window_name=driver.window_handles[0])  # switch to first tab
+        driver.close()  # close first tab
+        driver.switch_to.window(window_name=driver.window_handles[0])  # switch back to new tab
+        sleep(2)
+        driver.get("https://google.com")
+        sleep(2)
+        driver.get("https://nowsecure.nl")  # this should pass cloudflare captchas now
 
         sleep(5)  # Wait for the page to load
 
@@ -47,26 +64,37 @@ class SolveCloudflare:
 
         if is_chk:
             try:
+                print("waiting for iframe finished loading and switch to it...")
+
+                screenshot(driver=driver, file_name="waiting_frame.png")
+
                 # Wait for the CAPTCHA to load
                 WebDriverWait(driver, 20).until(EC.frame_to_be_available_and_switch_to_it(
                     (By.CSS_SELECTOR, "iframe[title='Widget containing a Cloudflare security challenge']")))
                 # WebDriverWait(driver, 20).until(EC.frame_to_be_available_and_switch_to_it((By.TAG_NAME, "iframe")))
 
                 # click the checkbox label
+                print("wait and try to click checkbox")
                 WebDriverWait(driver, 20).until(EC.element_to_be_clickable(
                     (By.CSS_SELECTOR, "label.ctp-checkbox-label"))).click()
 
+                screenshot(driver=driver, file_name='click_checkbox.png')
+
+                sleep(20)  # Wait for the page after click
+                print(f'title update: {driver.title}')  # obtains title update
+
+                screenshot(driver=driver, file_name="after_click.png")
+
+                bypass_success = True
             except (TimeoutException, Exception) as e:
-                print(f'exception: {e}')
-                error = e
+                if e is Exception:
+                    print(f'exception: {e}')
+                    error = e
+                else:
+                    print('Timeout exception...')
+                    error = 'Timeout exception'
+
                 bypass_success = False
-
-        if is_chk and bypass_success:
-            sleep(10)  # Wait for the page to load
-            print(f'title update: {driver.title}')  # obtains title update
-
-            result_str = driver.page_source
-            print(result_str)  # obtains the contents update
 
         title = driver.title
         driver.quit()
@@ -76,5 +104,5 @@ class SolveCloudflare:
         else:
             msg = "failed"
 
-        return {"data": result_str, "title": title, "bypass": msg, "error": error}
-
+        encode_str = parse.quote(result_str, encoding='utf-8')
+        return {"data": encode_str, "title": title, "bypass": msg, "error": error}
