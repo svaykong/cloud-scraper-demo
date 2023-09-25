@@ -1,7 +1,9 @@
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
+# from selenium import webdriver
+# from selenium.webdriver.chrome.options import Options
+from seleniumwire import webdriver
 import yaml
 import random
+import os
 
 default_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) ' \
                 'Chrome/99.0.9999.999 Safari/537.36'
@@ -20,14 +22,13 @@ class SASDriver:
     def init_chrome_option(self):
         print('init chrome option start.')
 
-        self.chrome_options = Options()
+        self.chrome_options = webdriver.ChromeOptions()
         self.chrome_options.add_argument("start-maximized")  # act as real user
         self.chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
         self.chrome_options.add_experimental_option("useAutomationExtension", False)
         self.chrome_options.add_argument("--disable-extensions")  # disable chrome extensions
-
-        # self.chrome_options.add_argument("--disable-gpu")  # Temporarily needed if running on Windows.
-        # self.chrome_options.add_argument("--no-sandbox")  # linux only
+        self.chrome_options.add_argument("--disable-gpu")  # Temporarily needed if running on Windows.
+        self.chrome_options.add_argument("--no-sandbox")  # linux only
 
         '''
             The following work all for headless mode
@@ -37,36 +38,55 @@ class SASDriver:
             self.chrome_options.add_argument("--headless")
             self.chrome_options.headless = True
         '''
-        self.chrome_options.add_argument("--headless")
-        # self.chrome_options.add_experimental_option("detach", True)  # Make selenium browser to stay open
+        self.chrome_options.headless = False
+        self.chrome_options.add_experimental_option("detach", True)  # Make selenium browser to stay open
 
         if self.use_random_user_agent:
             # setting headers
-            with open("user_agents.yml") as f_agent:
+            current_path = os.path.join(os.getcwd() + "..\\..\\", "user_agents.yml")
+            print(f'current path: {current_path}')
+            with open(current_path) as f_agent:
                 uagent = yaml.safe_load(f_agent)
-            random_number = random.randint(0, 16)
-            print(f'random number: {random_number}')
 
             ie = self.random_agent
-            if ie != 'Chrome' or ie != 'Firefox' or ie != 'IE' or ie != 'Other':
+            print(f'ie: {ie}')
+
+            count = 16  # Firefox
+            if ie == 'Chrome':
+                count = 7
+            elif ie == 'Edge':
+                count = 4
+            elif ie == 'IE':
+                count = 2
+            elif ie == 'Other':
+                count = 4
+
+            random_number = random.randint(0, count)
+            print(f'random number: {random_number}')
+
+            if ie != 'Chrome' and ie != 'Firefox' and ie != 'IE' and ie != 'Edge' and ie != 'Other':
                 raise Exception('Invalid agent.')
 
             random_agent = uagent[ie][random_number]
             print(f'random agent: {random_agent}')
 
             # set random user-agent
-            self.chrome_options.add_argument(f"user-agent={random_agent}")
+            # self.chrome_options.add_argument(f"user-agent={random_agent}")
         else:
             if self.user_agent is None:
+                self.user_agent = ''
+            if self.user_agent == '':
                 self.user_agent = default_agent
+
+            print(f'self.user_agent: {self.user_agent}')
 
             self.chrome_options.add_argument(f"--user-agent={self.user_agent}")
 
-        self.chrome_options.add_argument("force-device-scale-factor=1")  # set deviceScaleFactor: 1 or 0.75
-        self.chrome_options.add_argument("high-dpi-support=1")  # set highDpiSupport: 1 or 0.75
-        self.chrome_options.add_argument("has-touch=false")  # set hasTouch: false
-        self.chrome_options.add_argument("is-lanscape=false")  # set isLanscape: false
-        self.chrome_options.add_argument("is-mobile=false")  # set isMobile: false
+        # self.chrome_options.add_argument("force-device-scale-factor=1")  # set deviceScaleFactor: 1 or 0.75
+        # self.chrome_options.add_argument("high-dpi-support=1")  # set highDpiSupport: 1 or 0.75
+        # self.chrome_options.add_argument("has-touch=false")  # set hasTouch: false
+        # self.chrome_options.add_argument("is-lanscape=false")  # set isLanscape: false
+        # self.chrome_options.add_argument("is-mobile=false")  # set isMobile: false
 
         print('init chrome option end.')
 
