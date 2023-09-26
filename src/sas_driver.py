@@ -1,6 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from selenium_stealth import stealth
+# from selenium_stealth import stealth
 import yaml
 import random
 from typing import Union
@@ -30,8 +30,8 @@ class SASDriver:
         self.add_experimental_option("excludeSwitches", ["enable-automation"])
         self.add_experimental_option("useAutomationExtension", False)
         self.add_argument("--disable-extensions")  # disable chrome extensions
-        # self.add_argument("--disable-gpu")  # Temporarily needed if running on Windows.
-        # self.add_argument("--no-sandbox")  # linux only
+        self.add_argument("--disable-gpu")  # Temporarily needed if running on Windows.
+        self.add_argument("--no-sandbox")  # linux only
         self.add_argument("--auto-open-devtools-for-tabs")  # automatically open dev tools on every new tab
 
         '''
@@ -42,8 +42,8 @@ class SASDriver:
             self.add_argument("--headless")
             self.headless = True
         '''
-        self.add_argument("--headless")
-        # self.add_experimental_option("detach", True)  # Make selenium browser to stay open
+        # self.add_argument("--headless")
+        self.add_experimental_option("detach", True)  # Make selenium browser to stay open
 
         if self.userAgent != '':
             self.add_argument(f"--user-agent={self.userAgent}")
@@ -65,6 +65,7 @@ class SASDriver:
         self.driver = webdriver.Chrome(options=self.chromeOptions)
 
         # add stealth here...
+        '''
         stealth(
             self.driver,
             languages=["en-US", "en"],
@@ -73,6 +74,7 @@ class SASDriver:
             webgl_vendor="Intel Inc.",
             renderer="Intel Iris OpenGL Engine"
         )
+        '''
 
         random_width = 1920 + random.randint(0, 100)  # 800, 1920
         random_height = 3000 + random.randint(0, 100)  # 600, 3000

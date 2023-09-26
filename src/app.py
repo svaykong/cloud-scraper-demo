@@ -21,35 +21,31 @@ class Hello(Resource):
 @api.route('/solvecloudflare')
 class SolveSite(Resource):
     def post(self):
-        api_key = request.json.get('api-key')
+        api_key = request.json.get('API_KEY')
         print('-------------------------incoming request start-------------------------')
 
         url = request.json.get('url')
         print(f'url: {url}')
 
-        user_agent = request.json.get('user_agent')
-        print(f'user_agent: {user_agent}')
-
-        use_random_agent = request.json.get('use_random_agent')
-        print(f'use_random_agent: {use_random_agent}')
-
-        if use_random_agent is None:
-            use_random_agent = False
-
-        random_agent_name = request.json.get('random_agent_name')
-        print(f'random_agent_name: {random_agent_name}')
+        assert_element = request.json.get('assert_element')
+        print(f'assert_element: {assert_element}')
 
         print('-------------------------incoming request end-------------------------')
 
         if api_key == os.environ.get("API_KEY"):
-            result = SolveCloudflare.solve(url=url,
-                                           user_agent=user_agent,
-                                           use_random_agent=use_random_agent,
-                                           random_agent_name=random_agent_name)
-
-            return make_response(set_json_data({"result": result, 'status': True}), 200)
+            cloud_instance = SolveCloudflare()
+            result = ''
+            error = ''
+            try:
+                result = cloud_instance.solve(url=url, assert_element=assert_element)
+            except Exception as e:
+                print(f'exception: {e}')
+                error = str(e)
+            return make_response(set_json_data({"result": result, "error": error}), 200)
+        elif assert_element is None or assert_element == '':
+            return make_response(set_json_data({"result": "", "error": "invalid assert_element"}), 401)
         else:
-            return make_response(set_json_data({"result": '', 'status': False}), 401)
+            return make_response(set_json_data({"result": "", "error": "invalid API_KEY"}), 401)
 
 
 if __name__ == '__main__':

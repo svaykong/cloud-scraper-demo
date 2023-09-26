@@ -18,6 +18,14 @@ def get_current_path(file_path: str) -> str:
     return current_path
 
 
+def get_current_path2(file_path: str) -> str:
+    if sys == 'Darwin':
+        current_path = os.path.join(os.getcwd(), file_path)
+    else:
+        current_path = os.path.join(os.getcwd(), file_path)
+    return current_path
+
+
 def is_mac() -> bool:
     if sys == 'Darwin':
         return True
