@@ -1,4 +1,4 @@
-from common import get_current_path2
+from .common import get_current_path2
 from urllib import parse
 import json
 from seleniumbase import SB, BaseCase

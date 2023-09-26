@@ -2,8 +2,8 @@ import os
 
 from flask import Flask, request, make_response  # 서버 구현을 위한 Flask 객체 import
 from flask_restx import Api, Resource  # Api 구현을 위한 Api 객체 import
-from src.solve_cloudflare import SolveCloudflare
 from dotenv import load_dotenv
+from src.solve_cloudflare import SolveCloudflare
 from src.common import set_json_data
 
 load_dotenv()  # take environment variables from .env.
