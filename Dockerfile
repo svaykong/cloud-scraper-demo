@@ -2,6 +2,7 @@ ARG PORT=443
 FROM cypress/browsers:latest
 #USER 1001
 RUN apt-get install python3 -y
+RUN apt-get install uvicorn
 RUN echo $(python3 -m site --user-base)
 COPY requirements.txt .
 ENV PATH /home/root/.local/bin:${PATH}
