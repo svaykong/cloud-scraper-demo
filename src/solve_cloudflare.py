@@ -30,7 +30,12 @@ class SolveCloudflare(BaseCase):
         current_source = ''
         navigator_user_agent = ''
         is_detected = False
-        with SB(uc_cdp=True, incognito=True, headless="--headless", agent="python-requests/2.31.0") as sb:
+        with SB(uc_cdp=True,
+                incognito=True,
+                headless="--headless",
+                disable_csp="--disable-csp",  # (Disable the Content Security Policy of websites.)
+                chromium_arg="--no-sandbox,",
+                agent="python-requests/2.31.0") as sb:
             sb.open(url)
             try:
                 verify_success(sb=sb, assert_element=assert_element)
@@ -39,24 +44,6 @@ class SolveCloudflare(BaseCase):
                 navigator_user_agent = sb.get_user_agent()
                 sb.save_cookies(name="cookies_1.txt")
 
-                # _xhr.getAllResponseHeaders().trim().split( / [\\r\\n]+ /).map((value) = > value.split( /: / )).forEach(
-                #     (keyValue) = > {
-                #     _headers[keyValue[0].trim()] = keyValue[1].trim();
-                # });
-                # js_headers = '''
-                #     const _xhr = new XMLHttpRequest();
-                #     _xhr.open("HEAD", document.location, false);
-                #     _xhr.send(null);
-                #
-                #     const _headers = {};
-                #
-                #     _xhr.requestHeaders().trim().split(/[\\r\\n]+/).map((value) => value.split(/: /)).forEach((keyValue) => {
-                #         _headers[keyValue[0].trim()] = keyValue[1].trim();
-                #     });
-                #
-                #     return _headers;
-                # '''
-                # page_headers = sb.execute_script(js_headers)
             except Exception as e:
                 print(f'{e} verify ...')
                 is_detected = True
