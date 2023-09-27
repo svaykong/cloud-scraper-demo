@@ -3,6 +3,5 @@ src/__pycache__
 .DS_Store
 .env
 env
-downloaded_files
 latest_logs
 imgs
