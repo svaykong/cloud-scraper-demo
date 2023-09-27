@@ -49,17 +49,14 @@ class SolveCloudflare(BaseCase):
                 agent=agent,
                 chromium_arg="""
                     --no-sandbox, 
-                    --disable-setuid-sandbox
+                    --disable-setuid-sandbox,
+                    --disable-extensions,
+                    --disable-gpu,
+                    --disable-dev-shm-usage,
+                    start-maximized, 
+                    --auto-open-devtools-for-tabs
                 """,
                 ) as sb:
-
-            """
-                --disable-extensions,
-                --disable-gpu,
-                --disable-dev-shm-usage,
-                start-maximized, 
-                --auto-open-devtools-for-tabs
-            """
 
             stealth(
                 sb.driver,
