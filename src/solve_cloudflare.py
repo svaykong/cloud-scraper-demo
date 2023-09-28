@@ -40,6 +40,7 @@ class SolveCloudflare(BaseCase):
             start-maximized, 
             --auto-open-devtools-for-tabs
             --disable-setuid-sandbox,
+            --disable-blink-features=AutomationControlled
         """
 
         is_detected = False
