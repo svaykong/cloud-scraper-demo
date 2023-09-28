@@ -41,12 +41,10 @@ class SolveCloudflare(BaseCase):
         current_source = ''
         navigator_user_agent = ''
         is_detected = False
-        if agent == '':
-            agent = None
         with SB(uc_cdp=True,
                 incognito=True,
+                proxy="192.168.178.39:8866",
                 headless="--headless",
-                agent=agent,
                 chromium_arg="""
                     --no-sandbox, 
                     --disable-setuid-sandbox,
@@ -138,5 +136,9 @@ class SolveCloudflare(BaseCase):
         print(new_cookie_str)
 
         encode_str = parse.quote(current_source, encoding='utf-8')
-        return {"data": encode_str, "title": current_title, "navigator_user_agent": navigator_user_agent,
-                "cookies": new_cookie_str}
+        return {
+            "data": encode_str,
+            "title": current_title,
+            "navigator_user_agent": navigator_user_agent,
+            "cookies": new_cookie_str
+        }
