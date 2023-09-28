@@ -5,6 +5,7 @@ from urllib import parse
 import json
 from seleniumbase import SB, BaseCase
 from selenium_stealth import stealth
+from selenium.webdriver.chrome.options import Options
 
 BaseCase.main(__name__, __file__)
 
@@ -39,7 +40,6 @@ class SolveCloudflare(BaseCase):
         """
             start-maximized, 
             --auto-open-devtools-for-tabs
-            --disable-setuid-sandbox,
             --disable-blink-features=AutomationControlled
         """
 
@@ -47,16 +47,25 @@ class SolveCloudflare(BaseCase):
         with SB(
                 uc_cdp=False,
                 incognito=True,
+                browser="chrome",
                 agent=user_agent,
                 proxy=proxy,
                 headless="--headless",
                 chromium_arg="""
                     --no-sandbox, 
+                    --single-process,
+                    --disable-dev-shm-usage,
+                    --disable-setuid-sandbox,
                     --disable-extensions,
                     --disable-gpu,
-                    --disable-dev-shm-usage,
                 """,
                 ) as sb:
+            
+            chrome_options = Options()
+            chrome_options.add_argument('--headless')
+            chrome_options.add_argument('--no-sandbox')
+            chrome_options.add_argument('--disable-dev-shm-usage')
+            sb.driver.Chrome(options=chrome_options)
 
             stealth(
                 sb.driver,
