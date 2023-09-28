@@ -30,8 +30,11 @@ class SolveSite(Resource):
         assert_element = request.json.get('assert_element')
         print(f'assert_element: {assert_element}')
 
-        agent = request.json.get('agent')
-        print(f'agent: {agent}')
+        user_agent = request.json.get('user_agent')
+        print(f'user_agent: {user_agent}')
+
+        proxy = request.json.get('proxy')
+        print(f'proxy: {proxy}')
 
         print('-------------------------incoming request end-------------------------')
 
@@ -40,7 +43,7 @@ class SolveSite(Resource):
             result = ''
             error = ''
             try:
-                result = cloud_instance.solve(url=url, assert_element=assert_element, agent=agent)
+                result = cloud_instance.solve(url=url, assert_element=assert_element, user_agent=user_agent, proxy=proxy)
             except Exception as e:
                 print(f'solve exception: {e}')
                 error = str(e)

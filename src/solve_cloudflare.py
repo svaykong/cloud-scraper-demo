@@ -27,7 +27,7 @@ class SolveCloudflare(BaseCase):
         super().__init__()
         print('SolveCloudflare __init__')
 
-    def solve(self, url=None, assert_element=None, agent=None) -> dict:
+    def solve(self, url=None, assert_element=None, user_agent=None, proxy=None) -> dict:
         print('Solve cloudflare...')
 
         # driver.get('https://arh.antoinevastel.com/bots/areyouheadless')  # check if you are chrome headless
@@ -44,8 +44,9 @@ class SolveCloudflare(BaseCase):
         with SB(
                 uc_cdp=True,
                 incognito=True,
+                agent=user_agent,
+                proxy=proxy,
                 headless="--headless",
-                agent="python-requests/2.31.0",
                 chromium_arg="""
                     --no-sandbox, 
                     --disable-setuid-sandbox,
