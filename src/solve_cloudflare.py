@@ -110,8 +110,6 @@ class SolveCloudflare(BaseCase):
                 except Exception as e:
                     print(f'error Detected2 ...: {e}')
                     raise Exception("Detected")
-            finally:
-                sb.quit()
 
         print(f'Website title: {current_title}')
 
