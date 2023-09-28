@@ -30,9 +30,6 @@ class SolveSite(Resource):
         assert_element = request.json.get('assert_element')
         print(f'assert_element: {assert_element}')
 
-        agent = request.json.get('agent')
-        print(f'agent: {agent}')
-
         print('-------------------------incoming request end-------------------------')
 
         if api_key == os.environ.get("API_KEY"):
@@ -40,7 +37,7 @@ class SolveSite(Resource):
             result = ''
             error = ''
             try:
-                result = cloud_instance.solve(url=url, assert_element=assert_element, agent=agent)
+                result = cloud_instance.solve(url=url, assert_element=assert_element)
             except Exception as e:
                 print(f'solve exception: {e}')
                 error = str(e)
