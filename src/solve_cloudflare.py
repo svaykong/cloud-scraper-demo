@@ -36,13 +36,14 @@ class SolveCloudflare(BaseCase):
 
         print(f'request url: {url}')
 
-        page_headers = ''
-        current_title = ''
-        current_source = ''
-        navigator_user_agent = ''
+        """
+            start-maximized, 
+            --auto-open-devtools-for-tabs
+        """
+
         is_detected = False
         with SB(
-                uc_cdp=True,
+                uc_cdp=False,
                 incognito=True,
                 agent=user_agent,
                 proxy=proxy,
@@ -53,8 +54,6 @@ class SolveCloudflare(BaseCase):
                     --disable-extensions,
                     --disable-gpu,
                     --disable-dev-shm-usage,
-                    start-maximized, 
-                    --auto-open-devtools-for-tabs
                 """,
                 ) as sb:
 
@@ -111,9 +110,10 @@ class SolveCloudflare(BaseCase):
                 except Exception as e:
                     print(f'error Detected2 ...: {e}')
                     raise Exception("Detected")
+            finally:
+                sb.quit()
 
         print(f'Website title: {current_title}')
-        print(f'Website header: {page_headers}')
 
         if is_detected:
             cookie_filename = get_current_path2("saved_cookies/cookies_2.txt")
