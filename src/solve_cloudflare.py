@@ -41,10 +41,11 @@ class SolveCloudflare(BaseCase):
         current_source = ''
         navigator_user_agent = ''
         is_detected = False
-        with SB(uc_cdp=True,
+        with SB(
+                uc_cdp=True,
                 incognito=True,
-                proxy="192.168.178.39:8866",
                 headless="--headless",
+                agent="python-requests/2.31.0",
                 chromium_arg="""
                     --no-sandbox, 
                     --disable-setuid-sandbox,
