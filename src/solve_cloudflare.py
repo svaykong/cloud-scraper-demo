@@ -39,6 +39,7 @@ class SolveCloudflare(BaseCase):
         """
             start-maximized, 
             --auto-open-devtools-for-tabs
+            --disable-setuid-sandbox,
         """
 
         is_detected = False
@@ -50,7 +51,6 @@ class SolveCloudflare(BaseCase):
                 headless="--headless",
                 chromium_arg="""
                     --no-sandbox, 
-                    --disable-setuid-sandbox,
                     --disable-extensions,
                     --disable-gpu,
                     --disable-dev-shm-usage,
