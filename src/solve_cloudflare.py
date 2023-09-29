@@ -11,6 +11,7 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from time import sleep
+import undetected_chromedriver as uc
 
 def verify_sb_success(sb: SB, assert_element: str) -> None:
     sb.assert_element(assert_element, timeout=8)
@@ -165,17 +166,17 @@ class SolveCloudflare(BaseCase):
         options.add_argument("--disable-setuid-sandbox")
         options.add_argument("--disable-extensions") 
         options.add_argument("--disable-gpu")
-        # options.add_argument("--disable-blink-features=AutomationControlled")
-        # options.add_argument("start-maximized")  # act as real user
-        # options.add_argument("--auto-open-devtools-for-tabs")  
-        # options.add_argument("user-agent=Mozilla/5.0 (compatible, MSIE 11, Windows NT 6.3; Trident/7.0;  rv:11.0) like Gecko")
-        
+        options.add_argument("--disable-blink-features=AutomationControlled")
+        options.add_argument("start-maximized")  # act as real user
+        options.add_argument("--auto-open-devtools-for-tabs")  
+        options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36 Edg/95.0.1020.44")
         # options.add_argument("--proxy-server=") # set proxy server
 
         service = webdriver.ChromeService('/usr/bin/chromedriver')
-        return webdriver.Chrome(options=options, service=service)
-        
+        # return webdriver.Chrome(options=options, service=service)
 
+        return uc.Chrome(headless=True,use_subprocess=False, options=options, service=service)
+        
     def solve(self, url=None, assert_element=None, user_agent=None, proxy=None) -> dict:
         # driver.get('https://arh.antoinevastel.com/bots/areyouheadless')  # check if you are chrome headless
         # driver.get('https://amiunique.org/fingerprint')  # check our browser fingerprint look unique
@@ -198,9 +199,8 @@ class SolveCloudflare(BaseCase):
         )
 
         # go to the site page
-        driver.execute_script(f"window.open(); window.location.href=\"{url}\"");
-        # driver.get(url)        
-        sleep(5)
+        driver.get(url)        
+        sleep(10)
         
         driver.save_screenshot(get_current_path('imgs/img1.png'))
 

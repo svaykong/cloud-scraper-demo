@@ -12,3 +12,4 @@ fastapi==0.103.1
 uvicorn==0.23.2
 gunicorn==21.2.0
 selenium-stealth==1.0.6
+undetected-chromedriver==3.5.3

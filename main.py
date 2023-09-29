@@ -66,8 +66,10 @@ if __name__ == '__main__':
     cloud_instance = SolveCloudflare()
     try:
         result = cloud_instance.solve(
-            url='https://owner.yogiyo.co.kr/owner/logout/', 
-            assert_element="img[alt=\"요기요 사장님 BI\"]", 
+            # url='https://owner.yogiyo.co.kr/owner/logout/', 
+            # assert_element="img[alt=\"요기요 사장님 BI\"]", 
+            url='https://onlinebanking.metrobank.com.ph/signin',
+            assert_element="button[type=\"submit\"]", 
             user_agent=None, 
             proxy=None)
         print(result)
