@@ -13,6 +13,8 @@ def set_json_data(data: dict) -> json:
 def get_current_path(file_path: str) -> str:
     if sys == 'Darwin':
         current_path = os.path.join(os.getcwd(), '../', file_path)
+    elif sys == 'Linux':
+        current_path = os.path.join(os.getcwd(), file_path)
     else:
         current_path = os.path.join(os.getcwd(), '..\\', file_path)
     return current_path
