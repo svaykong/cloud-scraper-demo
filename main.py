@@ -43,7 +43,7 @@ class SolveSite(Resource):
             result = ''
             error = ''
             try:
-                result = cloud_instance.solve(url=url, assert_element=assert_element, user_agent=user_agent, proxy=proxy)
+                result = cloud_instance.solve(url=url, assert_element=assert_element, proxy=proxy)
             except Exception as e:
                 print(f'solve exception: {e}')
                 error = str(e)

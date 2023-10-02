@@ -3,10 +3,7 @@ import random
 from .common import get_current_path2
 from urllib import parse
 import json
-from seleniumbase import SB, BaseCase
-from selenium_stealth import stealth
-
-BaseCase.main(__name__, __file__)
+from seleniumbase import SB
 
 
 def verify_success(sb: SB, assert_element: str) -> None:
@@ -22,12 +19,11 @@ def set_viewport_size(sb: SB, width: int, height: int) -> None:
     sb.set_window_size(*window_size)
 
 
-class SolveCloudflare(BaseCase):
+class SolveCloudflare:
     def __init__(self):
-        super().__init__()
         print('SolveCloudflare __init__')
 
-    def solve(self, url=None, assert_element=None, user_agent=None, proxy=None) -> dict:
+    def solve(self, url=None, assert_element=None, proxy=None) -> dict:
         print('Solve cloudflare...')
 
         # driver.get('https://arh.antoinevastel.com/bots/areyouheadless')  # check if you are chrome headless
@@ -36,44 +32,20 @@ class SolveCloudflare(BaseCase):
 
         print(f'request url: {url}')
 
-        """
-            start-maximized, 
-            --auto-open-devtools-for-tabs
-            --disable-setuid-sandbox,
-            --disable-blink-features=AutomationControlled
-        """
-
         is_detected = False
         with SB(
-                uc_cdp=False,
+                uc_cdp=True,
                 incognito=True,
-                agent=user_agent,
+                agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36",
                 proxy=proxy,
                 headless="--headless",
-                chromium_arg="""
-                    --no-sandbox, 
-                    --disable-extensions,
-                    --disable-gpu,
-                    --disable-dev-shm-usage,
-                """,
+                chromium_arg='--start-maximized, --no-sandbox,' +
+                             '--disable-extensions, --disable-gpu,' +
+                             '--disable-dev-shm-usage',
                 ) as sb:
 
-            stealth(
-                sb.driver,
-                languages=["en-US", "en"],
-                vendor="Google Inc.",
-                platform="Win32",
-                webgl_vendor="Intel Inc.",
-                renderer="Intel Iris OpenGL Engine",
-                run_on_insecure_origins=True
-            )
-
-            sb.clear_all_cookies()
-            sb.clear_local_storage()
-            sb.clear_session_storage()
-
-            random_width = 1920 + random.randint(0, 100)  # 800, 1920
-            random_height = 3000 + random.randint(0, 100)  # 600, 3000
+            random_width = 1920 + random.randint(0, 100)
+            random_height = 3000 + random.randint(0, 100)
             set_viewport_size(sb, random_width, random_height)
 
             sb.open(url)
@@ -87,13 +59,15 @@ class SolveCloudflare(BaseCase):
                 verify_success(sb=sb, assert_element=assert_element)
             except Exception as e:
                 print(f'{e} verify ...')
+                sb.save_screenshot(name="verify.png")
                 is_detected = True
                 if sb.is_element_visible('input[value*="Verify"]'):
-                    sb.click('input[value*="Verify"]')
+                    sb.slow_click('input[value*="Verify"]')
                 elif sb.is_element_visible('iframe[title*="challenge"]'):
                     sb.switch_to_frame('iframe[title*="challenge"]')
-                    sb.click("span.mark")
+                    sb.slow_click("span.mark")
                 else:
+
                     print('Detected1 ...')
                     raise Exception("Detected")
                 try:
